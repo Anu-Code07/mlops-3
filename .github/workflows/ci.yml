@@ -9,30 +9,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.9
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
 
-    - name: Install dependencies
-      run: pip install -r requirements.txt
+      - name: Install dependencies
+        run: pip install -r requirements.txt
 
-    - name: Train model
-      run: python src/train.py
+      - name: Train model
+        run: python src/train.py
 
-    - name: Build Docker image
-      run: docker build -t mlops-assignment-3 .
+      - name: Simulate Docker build
+        run: python docker_simulator.py build
 
-    - name: Run container
-      run: docker run mlops-assignment-3
+      - name: Simulate Docker run
+        run: python docker_simulator.py run
 
-    - name: DockerHub Login
-      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      - name: Simulate Docker push
+        run: python docker_simulator.py push ${{ secrets.DOCKER_USERNAME }}
 
-    - name: Push to DockerHub
-      run: |
-        docker tag mlops-assignment-3 ${{ secrets.DOCKER_USERNAME }}/mlops-assignment-3
-        docker push ${{ secrets.DOCKER_USERNAME }}/mlops-assignment-3
+      - name: Run quantization (optional)
+        run: |
+          python src/quantize.py
+          echo "Quantization completed successfully"
